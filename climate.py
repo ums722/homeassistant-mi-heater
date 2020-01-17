@@ -1,6 +1,8 @@
 """
     Support for Xiaomi wifi-enabled home heaters via miio.
     author: sunfang1cn@gmail.com
+    modifier: gaussian8
+    Tested environment: HASS 0.105
 """
 import logging
 
@@ -8,9 +10,8 @@ import voluptuous as vol
 
 from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
-    DOMAIN, STATE_HEAT, STATE_COOL,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
-    SUPPORT_ON_OFF, SUPPORT_OPERATION_MODE)
+    DOMAIN, HVAC_MODE_HEAT, HVAC_MODE_COOL,
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE)
 from homeassistant.const import (
     ATTR_TEMPERATURE, CONF_HOST, CONF_NAME, CONF_TOKEN,
     STATE_ON, STATE_OFF, TEMP_CELSIUS)
@@ -23,8 +24,7 @@ from homeassistant.exceptions import PlatformNotReady
 _LOGGER = logging.getLogger(__name__)
 
 REQUIREMENTS = ['python-miio>=0.3.1']
-SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_OPERATION_MODE |
-                 SUPPORT_ON_OFF)
+SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE)
 SERVICE_SET_ROOM_TEMP = 'miheater_set_room_temperature'
 MIN_TEMP = 16
 MAX_TEMP = 32
@@ -97,6 +97,15 @@ class MiHeater(ClimateDevice):
         return self._name
 
     @property
+    def hvac_mode(self):
+        return HVAC_MODE_HEAT if self._state['power'][0] == 'on' else STATE_OFF
+
+    @property
+    def hvac_modes(self):
+        return [HVAC_MODE_HEAT, STATE_OFF]
+    
+    
+    @property
     def supported_features(self):
         """Return the list of supported features."""
         return SUPPORT_FLAGS
@@ -150,16 +159,6 @@ class MiHeater(ClimateDevice):
         """Return the maximum temperature."""
         return MAX_TEMP
 
-    @property
-    def current_operation(self):
-        """Return current operation."""
-        return STATE_HEAT if self._state['power'][0] == 'on' else STATE_OFF
-
-    @property
-    def operation_list(self):
-        """List of available operation modes."""
-        return [STATE_HEAT, STATE_OFF]
-
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
@@ -181,11 +180,11 @@ class MiHeater(ClimateDevice):
         """Retrieve latest state."""
         self.getAttrData()
 
-    async def async_set_operation_mode(self, operation_mode):
+    async def async_set_hvac_mode(self, hvac_mode):
         """Set operation mode."""
-        if operation_mode == STATE_HEAT or operation_mode == STATE_COOL:
+        if hvac_mode  == HVAC_MODE_HEAT or hvac_mode  == HVAC_MODE_COOL:
             await self.async_turn_on()
-        elif operation_mode == STATE_OFF:
+        elif hvac_mode  == STATE_OFF:
             await self.async_turn_off()
         else:
-            _LOGGER.error("Unrecognized operation mode: %s", operation_mode)
+            _LOGGER.error("Unrecognized operation mode: %s", hvac_mode)
