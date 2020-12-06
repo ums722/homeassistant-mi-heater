@@ -1,16 +1,16 @@
 """
     Support for Xiaomi wifi-enabled home heaters via miio.
     author: sunfang1cn@gmail.com
-    modifier: gaussian8
-    Tested environment: HASS 0.105
+    modifier: ee02217
+    Tested environment: HASS 0.118.5
 """
 import logging
 
 import voluptuous as vol
 
-from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
+from homeassistant.components.climate import ClimateEntity, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
-    DOMAIN, HVAC_MODE_HEAT, HVAC_MODE_COOL,
+    DOMAIN, HVAC_MODE_HEAT, HVAC_MODE_OFF,
     SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE)
 from homeassistant.const import (
     ATTR_TEMPERATURE, CONF_HOST, CONF_NAME, CONF_TOKEN,
@@ -20,14 +20,18 @@ from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.exceptions import PlatformNotReady
 
+from miio import Device,DeviceException
+
+
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['python-miio>=0.3.1']
+REQUIREMENTS = ['python-miio>=0.5.0']
 SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE)
 SERVICE_SET_ROOM_TEMP = 'miheater_set_room_temperature'
-MIN_TEMP = 16
-MAX_TEMP = 32
+PRECISION = 1
+MIN_TEMP = 18
+MAX_TEMP = 28
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME): cv.string,
@@ -42,8 +46,6 @@ SET_ROOM_TEMP_SCHEMA = vol.Schema({
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Perform the setup for Xiaomi heaters."""
-    from miio import Device, DeviceException
-
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
     token = config.get(CONF_TOKEN)
@@ -59,16 +61,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         device_info = device.info()
         model = device_info.model
         unique_id = "{}-{}".format(model, device_info.mac_address)
-        _LOGGER.info("%s %s %s detected",
+        _LOGGER.warning("%s %s %s detected",
                      model,
                      device_info.firmware_version,
                      device_info.hardware_version)
         miHeater = MiHeater(device, name, unique_id, hass)
         devices.append(miHeater)
         add_devices(devices)
+
+
         async def set_room_temp(service):
             """Set room temp."""
-            temperature = service.data.get('temperature')
+            
+            aux = device.raw_command('get_properties', [{"siid":2,"piid":5}])
+            temperature=aux[0]["value"]
             await miHeater.async_set_temperature(temperature)
 
         hass.services.async_register(DOMAIN, SERVICE_SET_ROOM_TEMP,
@@ -79,9 +85,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 
 
-class MiHeater(ClimateDevice):
-    from miio import DeviceException
-
+class MiHeater(ClimateEntity):
     """Representation of a MiHeater device."""
 
     def __init__(self, device, name, unique_id, _hass):
@@ -98,13 +102,13 @@ class MiHeater(ClimateDevice):
 
     @property
     def hvac_mode(self):
-        return HVAC_MODE_HEAT if self._state['power'][0] == 'on' else STATE_OFF
+        return HVAC_MODE_HEAT if self._state['power'] else HVAC_MODE_OFF
 
     @property
     def hvac_modes(self):
-        return [HVAC_MODE_HEAT, STATE_OFF]
-    
-    
+        return [HVAC_MODE_HEAT, HVAC_MODE_OFF]
+
+
     @property
     def supported_features(self):
         """Return the list of supported features."""
@@ -113,27 +117,39 @@ class MiHeater(ClimateDevice):
     def temperature_unit(self):
         """Return the unit of measurement which this thermostat uses."""
         return TEMP_CELSIUS
+
+    # @property
+    # def precision(self):
+    #     """Return the unit of measurement which this thermostat uses."""
+    #     return PRECISION
+
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self._state['target_temperature'][0]
+        return self._state['target_temperature']
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self._state['current_temperature'][0]
+        return self._state['current_temperature']
 
     @property
     def target_temperature_step(self):
         """Return the supported step of target temperature."""
         return 1
     def getAttrData(self):
+
         try:
             data = {}
-            data['power'] = self._device.send('get_prop', ['power'])
-            data['humidity'] = self._device.send('get_prop', ['relative_humidity'])
-            data['target_temperature'] = self._device.send('get_prop', ['target_temperature'])
-            data['current_temperature'] = self._device.send('get_prop', ['temperature'])
+            
+            power=self._device.raw_command('get_properties', [{"siid":2,"piid":1}])
+            #humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
+            target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":5}])
+            current_temperature=self._device.raw_command('get_properties', [{"siid":4,"piid":7}])
+            data['power'] = power[0]["value"]
+            #data['humidity'] = humidity[0]["value"]
+            data['target_temperature'] = target_temperature[0]["value"]
+            data['current_temperature'] = current_temperature[0]["value"]
             self._state = data
         except DeviceException:
             _LOGGER.exception('Fail to get_prop from Xiaomi heater')
@@ -147,7 +163,7 @@ class MiHeater(ClimateDevice):
     @property
     def is_on(self):
         """Return true if heater is on."""
-        return self._state['power'][0] == 'on'
+        return self._state['power']
 
     @property
     def min_temp(self):
@@ -162,20 +178,21 @@ class MiHeater(ClimateDevice):
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
+        _LOGGER.warning("Setting temperature: %s", int(temperature))
         if temperature is None:
+            _LOGGER.error("Wrong temperature: %s", temperature)
             return
-        self._device.send('set_target_temperature', [int(temperature)])
+        self._device.raw_command('set_properties',[{"did":"318921340","value":int(temperature),"siid":2,"piid":5}])
 
 
     async def async_turn_on(self):
         """Turn Mill unit on."""
-        self._device.send('set_power', ['on'])
+        self._device.raw_command('set_properties',[{"did":"318921340","value":True,"siid":2,"piid":1}])
 
     async def async_turn_off(self):
         """Turn Mill unit off."""
-        self._device.send('set_power', ['off'])
-
-
+        self._device.raw_command('set_properties',[{"did":"318921340","value":False,"siid":2,"piid":1}])
+        
     async def async_update(self):
         """Retrieve latest state."""
         self.getAttrData()
@@ -184,7 +201,7 @@ class MiHeater(ClimateDevice):
         """Set operation mode."""
         if hvac_mode  == HVAC_MODE_HEAT or hvac_mode  == HVAC_MODE_COOL:
             await self.async_turn_on()
-        elif hvac_mode  == STATE_OFF:
+        elif hvac_mode  == HVAC_MODE_OFF:
             await self.async_turn_off()
         else:
             _LOGGER.error("Unrecognized operation mode: %s", hvac_mode)
