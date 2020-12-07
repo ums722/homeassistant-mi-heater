@@ -1,6 +1,7 @@
-# homeassistant-mi-heater for zhimi.heater.mc2
+# homeassistant-mi-heater for zhimi.heater.mc2 (tested) and zhimi.heater.zb1 (not tested)
 - Modified component what was not correctly worked in HASS new version.
 - Tested on zhimi.heater.mc2
+- Not tested on zhimi.heater.zb1
 
 
 xiaomi Smart Space Heater S（zhimi.heater.mc2） component for home-assistant
