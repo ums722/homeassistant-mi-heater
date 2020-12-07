@@ -80,7 +80,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             
             if DEVICE_MODEL == "zhimi.heater.mc2":
                 aux = device.raw_command('get_properties', [{"siid":2,"piid":5}])
-            elif DEVICE_MODEL == "zhimi.heater.zb1":
+            elif DEVICE_MODEL == "zhimi.heater.zb1" or DEVICE_MODEL == "zhimi.heater.za2":
                 aux = device.raw_command('get_properties', [{"siid":2,"piid":6}])
             else  :  
                 _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)
@@ -145,6 +145,12 @@ class MiHeater(ClimateEntity):
         return self._state['current_temperature']
 
     @property
+    def current_humidity(self):
+        """Return the current humidity."""
+        return self._state['humidity']
+
+
+    @property
     def target_temperature_step(self):
         """Return the supported step of target temperature."""
         return 1
@@ -161,7 +167,8 @@ class MiHeater(ClimateEntity):
                 #humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
                 target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":5}])
                 current_temperature=self._device.raw_command('get_properties', [{"siid":4,"piid":7}])
-            elif DEVICE_MODEL == "zhimi.heater.zb1":
+                data['humidity']  = 0
+            elif DEVICE_MODEL == "zhimi.heater.zb1" or DEVICE_MODEL == "zhimi.heater.za2" :
                 power=self._device.raw_command('get_properties', [{"siid":2,"piid":2}])
                 humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
                 target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":6}])
@@ -170,12 +177,8 @@ class MiHeater(ClimateEntity):
             else:  
                 _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)
 
-            power=self._device.raw_command('get_properties', [{"siid":2,"piid":1}])
-            #humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
-            target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":5}])
-            current_temperature=self._device.raw_command('get_properties', [{"siid":4,"piid":7}])
             data['power'] = power[0]["value"]
-            #data['humidity'] = humidity[0]["value"]
+            
             data['target_temperature'] = target_temperature[0]["value"]
             data['current_temperature'] = current_temperature[0]["value"]
             self._state = data
