@@ -42,6 +42,7 @@ SET_ROOM_TEMP_SCHEMA = vol.Schema({
     vol.Optional('temperature'): cv.positive_int
 })
 
+DEVICE_MODEL = ""
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -49,6 +50,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
     token = config.get(CONF_TOKEN)
+
+
 
     _LOGGER.info("Initializing Xiaomi heaters with host %s (token %s...)", host, token[:5])
 
@@ -60,6 +63,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         device_info = device.info()
         model = device_info.model
+        DEVICE_MODEL = model
+
         unique_id = "{}-{}".format(model, device_info.mac_address)
         _LOGGER.warning("%s %s %s detected",
                      model,
@@ -73,7 +78,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         async def set_room_temp(service):
             """Set room temp."""
             
-            aux = device.raw_command('get_properties', [{"siid":2,"piid":5}])
+            if DEVICE_MODEL == "zhimi.heater.mc2":
+                aux = device.raw_command('get_properties', [{"siid":2,"piid":5}])
+            elif DEVICE_MODEL == "zhimi.heater.zb1":
+                aux = device.raw_command('get_properties', [{"siid":2,"piid":6}])
+            else  :  
+                _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)
+
             temperature=aux[0]["value"]
             await miHeater.async_set_temperature(temperature)
 
@@ -141,7 +152,24 @@ class MiHeater(ClimateEntity):
 
         try:
             data = {}
-            
+
+            device_info = self._device.info()
+            DEVICE_MODEL = device_info.model
+
+            if DEVICE_MODEL == "zhimi.heater.mc2":
+                power=self._device.raw_command('get_properties', [{"siid":2,"piid":1}])
+                #humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
+                target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":5}])
+                current_temperature=self._device.raw_command('get_properties', [{"siid":4,"piid":7}])
+            elif DEVICE_MODEL == "zhimi.heater.zb1":
+                power=self._device.raw_command('get_properties', [{"siid":2,"piid":2}])
+                humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
+                target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":6}])
+                current_temperature=self._device.raw_command('get_properties', [{"siid":5,"piid":8}])
+                data['humidity'] = humidity[0]["value"]
+            else:  
+                _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)
+
             power=self._device.raw_command('get_properties', [{"siid":2,"piid":1}])
             #humidity=self._device.raw_command('get_properties', [{"siid":5,"piid":7}])
             target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":5}])
