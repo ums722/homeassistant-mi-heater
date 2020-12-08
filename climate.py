@@ -213,16 +213,42 @@ class MiHeater(ClimateEntity):
         if temperature is None:
             _LOGGER.error("Wrong temperature: %s", temperature)
             return
-        self._device.raw_command('set_properties',[{"did":"318921340","value":int(temperature),"siid":2,"piid":5}])
 
+        device_info = self._device.info()
+        DEVICE_MODEL = device_info.model      
+        
+        if DEVICE_MODEL == "zhimi.heater.mc2":              
+            self._device.raw_command('set_properties',[{"value":int(temperature),"siid":2,"piid":5}])
+        elif DEVICE_MODEL == "zhimi.heater.zb1" or DEVICE_MODEL == "zhimi.heater.za2" :
+            self._device.raw_command('set_properties',[{"value":int(temperature),"siid":2,"piid":6}])
+        else:  
+            _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)
 
     async def async_turn_on(self):
         """Turn Mill unit on."""
-        self._device.raw_command('set_properties',[{"did":"318921340","value":True,"siid":2,"piid":1}])
+
+        device_info = self._device.info()
+        DEVICE_MODEL = device_info.model      
+        
+        if DEVICE_MODEL == "zhimi.heater.mc2":              
+            self._device.raw_command('set_properties',[{"value":True,"siid":2,"piid":1}])
+        elif DEVICE_MODEL == "zhimi.heater.zb1" or DEVICE_MODEL == "zhimi.heater.za2" :
+            self._device.raw_command('set_properties',[{"value":True,"siid":2,"piid":2}])
+        else:  
+            _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)        
+        
 
     async def async_turn_off(self):
         """Turn Mill unit off."""
-        self._device.raw_command('set_properties',[{"did":"318921340","value":False,"siid":2,"piid":1}])
+        device_info = self._device.info()
+        DEVICE_MODEL = device_info.model      
+        
+        if DEVICE_MODEL == "zhimi.heater.mc2":              
+            self._device.raw_command('set_properties',[{"value":False,"siid":2,"piid":1}])
+        elif DEVICE_MODEL == "zhimi.heater.zb1" or DEVICE_MODEL == "zhimi.heater.za2" :
+            self._device.raw_command('set_properties',[{"value":False,"siid":2,"piid":2}])
+        else:  
+            _LOGGER.exception('Unsupported model: %s', DEVICE_MODEL)    
         
     async def async_update(self):
         """Retrieve latest state."""
