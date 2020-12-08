@@ -5,9 +5,11 @@
 - Not tested on zhimi.heater.za2
 
 
-xiaomi Smart Space Heater S（zhimi.heater.mc2） component for home-assistant
+Xiaomi Smart Space Heater S（zhimi.heater.mc2） component for home-assistant
 ![p](https://cdn.weasy.io/users/xiaomi/catalog/mi_smart_space_heater_s.jpg)
 
+Xiaomi Mi Smart Space Heater 1S (zhimi.heater.zb1) component for home-assistanr
+![p]t(https://www.powerplanetonline.com/cdnassets/calefactor_electrico_xiaomi_mi_smart_space_heater_1s_01_l.jpg)
 
 ### Install
 place all files except README.md to your ````<home-assistant-config-path>/custom_components/miheater/````  path
