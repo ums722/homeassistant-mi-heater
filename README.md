@@ -1,8 +1,10 @@
-# homeassistant-mi-heater for zhimi.heater.mc2, zhimi.heater.zb1 (tested) and zhimi.heater.za2 (not tested)
+# homeassistant-mi-heater for zhimi.heater.mc2, zhimi.heater.zb1 and zhimi.heater.za2
 - Modified component what was not correctly worked in HASS new version.
 - Tested on zhimi.heater.mc2
 - Tested on zhimi.heater.zb1
-- Not tested on zhimi.heater.za2
+- Tested on zhimi.heater.za2
+
+
 
 
 Xiaomi Smart Space Heater S（zhimi.heater.mc2） component for home-assistant
@@ -34,3 +36,9 @@ climate:
 
 ### Notice
 token must got from APP miio2.db, not from "miio discover" on PC
+
+### TODO
+
+- make device detection in code persistent (instead of querying device everytime
+- improve documentation and service description
+- make hacs compatible
