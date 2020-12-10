@@ -2,7 +2,7 @@
 - Modified component what was not correctly worked in HASS new version.
 - Tested on zhimi.heater.mc2
 - Tested on zhimi.heater.zb1
-- Tested on zhimi.heater.za2
+- Tested on zhimi.heater.za2 (some issues reported)
 
 
 
@@ -13,8 +13,21 @@ Xiaomi Smart Space Heater S（zhimi.heater.mc2） component for home-assistant
 Xiaomi Mi Smart Space Heater 1S (zhimi.heater.zb1) component for home-assistant
 ![p](https://www.powerplanetonline.com/cdnassets/calefactor_electrico_xiaomi_mi_smart_space_heater_1s_01_l.jpg)
 
-### Install
-place all files except README.md to your ````<home-assistant-config-path>/custom_components/miheater/````  path
+
+### Install through HACS:
+
+Add a custom repository in HACS pointed to https://github.com/ee02217/homeassistant-mi-heater
+
+The new integration for miHeater should appear under your integrations tab.
+
+Click Install and restart Home Assistant.
+
+### Install manually:
+
+Copy the contents found in https://github.com/ee02217/homeassistant-mi-heater/tree/master/custom_components/miheater/ to your custom_components folder in Home Assistant.
+
+Restart Home Assistant.
+
 ### Configuration.yaml
 
 ````
@@ -23,6 +36,7 @@ climate:
     host: <your device ip address>
     token: <your device miio token>
     name: xiaomi_heater
+    model: zhimi.heater.mc2 (optional: zhimi.heater.mc2 | zhimi.heater.zb1 | zhimi.heater.za2)
 ````
 
 
