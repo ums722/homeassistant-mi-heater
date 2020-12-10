@@ -1,4 +1,4 @@
-# homeassistant-mi-heater for zhimi.heater.mc2, zhimi.heater.zb1 and zhimi.heater.za2
+# Home Assistant Integration for zhimi.heaters
 - Modified component what was not correctly worked in HASS new version.
 - Tested on zhimi.heater.mc2
 - Tested on zhimi.heater.zb1
