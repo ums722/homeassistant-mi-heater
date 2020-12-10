@@ -1,8 +1,8 @@
 # Home Assistant Integration for zhimi.heaters
-- Modified component what was not correctly worked in HASS new version.
-- Tested on zhimi.heater.mc2
-- Tested on zhimi.heater.zb1
-- Tested on zhimi.heater.za2 (some issues reported)
+  Modified component what was not correctly worked in HASS new version.
+  Tested on zhimi.heater.mc2
+  Tested on zhimi.heater.zb1
+  Tested on zhimi.heater.za2 (some issues reported)
 
 
 
@@ -34,9 +34,9 @@ climate:
 
 ### Features
 
-* supporting power on/off
-* supporting setting temperature
-* supporting read temperature from device
+  supporting power on/off
+  supporting setting temperature
+  supporting read temperature from device
 
 
 
