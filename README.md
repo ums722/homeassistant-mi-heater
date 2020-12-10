@@ -48,6 +48,8 @@ climate:
 
 ![xx](https://bbs.hassbian.com/data/attachment/forum/201812/25/003901jd82efz3hkgh639v.png)
 
+
+
 ### Notice
 token must got from APP miio2.db, not from "miio discover" on PC
 
@@ -55,4 +57,4 @@ token must got from APP miio2.db, not from "miio discover" on PC
 
 - make device detection in code persistent (instead of querying device everytime
 - improve documentation and service description
-- make hacs compatible
+- <s>make hacs compatible</s>
