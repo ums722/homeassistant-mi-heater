@@ -1,7 +1,7 @@
 {
   "domain": "miheater",
   "name": "miHeater",
-  "documentation": "",
+  "documentation": "https://github.com/ee02217/homeassistant-mi-heater",
   "dependencies": [],
   "codeowners": [],
   "requirements": []
