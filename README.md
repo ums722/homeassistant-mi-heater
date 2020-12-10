@@ -55,6 +55,6 @@ token must got from APP miio2.db, not from "miio discover" on PC
 
 ### TODO
 
-- make device detection in code persistent (instead of querying device everytime
+- <s>make device detection in code persistent (instead of querying device everytime</s>
 - improve documentation and service description
 - <s>make hacs compatible</s>
