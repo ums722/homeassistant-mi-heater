@@ -65,9 +65,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     try:
         device = Device(host, token)
-
+        device_info = device.info()
+        
         if model is None:
-            device_info = device.info()
+            
             model = device_info.model
             DEVICE_MODEL = model
 
