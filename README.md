@@ -51,8 +51,6 @@ climate:
 
 
 
-### Notice
-token must got from APP miio2.db, not from "miio discover" on PC
 
 ### TODO
 
