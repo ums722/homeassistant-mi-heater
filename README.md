@@ -3,7 +3,7 @@
 - Modified component what was not correctly worked in HASS new version.
 - Tested on zhimi.heater.mc2
 - Tested on zhimi.heater.zb1
-- Tested on zhimi.heater.za2 (some issues reported)
+- Tested on zhimi.heater.za2 (some issues reported. If someone has the correct raw codes working, I can integrate)
 
 
 
