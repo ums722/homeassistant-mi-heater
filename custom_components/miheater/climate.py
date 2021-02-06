@@ -214,7 +214,8 @@ class MiHeater(ClimateEntity):
         """Return the minimum temperature."""
         if self._model == "zhimi.heater.zb1" or self._model == "zhimi.heater.za2" :
             MIN_TEMP = 16;
-            
+        else:
+            MIN_TEMP = 18;
         return MIN_TEMP
 
     @property
