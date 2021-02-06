@@ -32,6 +32,7 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE)
 SERVICE_SET_ROOM_TEMP = 'miheater_set_room_temperature'
 PRECISION = 1
 MIN_TEMP = 18
+MIN_TEMP_ZB1 = 16
 MAX_TEMP = 28
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
@@ -213,10 +214,9 @@ class MiHeater(ClimateEntity):
     def min_temp(self):
         """Return the minimum temperature."""
         if self._model == "zhimi.heater.zb1" or self._model == "zhimi.heater.za2" :
-            MIN_TEMP = 16;
+            return MIN_TEMP_ZB1 
         else:
-            MIN_TEMP = 18;
-        return MIN_TEMP
+            return MIN_TEMP
 
     @property
     def max_temp(self):
