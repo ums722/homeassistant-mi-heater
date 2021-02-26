@@ -28,6 +28,8 @@ Click Install and restart Home Assistant.
 Copy the contents found in https://github.com/ee02217/homeassistant-mi-heater/tree/master/custom_components/miheater/ to your custom_components folder in Home Assistant.
 
 Restart Home Assistant.
+_____________________________________________________________________________________________________________________________
+
 
 ### Configuration.yaml
 
