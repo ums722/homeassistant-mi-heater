@@ -197,7 +197,7 @@ class MiHeater(ClimateEntity):
                 humidity=self._device.raw_command('get_properties', [{"siid":3,"piid":2}])
                 target_temperature=self._device.raw_command('get_properties', [{"siid":2,"piid":2}])
                 current_temperature=self._device.raw_command('get_properties', [{"siid":3,"piid":1}])
-                data['humidity'] = humidity[0]["value"]
+                data['humidity'] = 0
             else:  
                 _LOGGER.exception('Unsupported model: %s', self._model)
 
