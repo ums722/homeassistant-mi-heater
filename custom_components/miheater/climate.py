@@ -118,6 +118,7 @@ class MiHeater(ClimateEntity):
         self._name = name
         self._model = model
         self._state = None
+        self._attr_unique_id = unique_id
         self.entity_id = generate_entity_id('climate.{}', unique_id, hass=_hass)
         self.getAttrData()
     @property
