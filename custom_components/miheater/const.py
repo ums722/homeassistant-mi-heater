@@ -1,0 +1,6 @@
+DOMAIN = "miheater"
+
+CONF_HOST = "host"
+CONF_TOKEN = "token"
+
+DEFAULT_UPDATE_INTERVAL = 30

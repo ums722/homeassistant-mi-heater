@@ -1,9 +1,11 @@
 {
   "domain": "miheater",
-  "name": "miHeater",
+  "name": "Mi Heater",
+  "version": "2.0.0",
   "documentation": "https://github.com/ee02217/homeassistant-mi-heater",
+  "requirements": ["python-miio>=0.5.4"],
   "dependencies": [],
-  "codeowners": [],
-  "requirements": [],
-  "version": "1.3.0"
+  "codeowners": ["@ee02217"],
+  "config_flow": true,
+  "iot_class": "local_polling"
 }
