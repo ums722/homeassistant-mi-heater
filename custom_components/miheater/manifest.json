@@ -8,5 +8,7 @@
   "codeowners": ["@ee02217"],
   "config_flow": true,
   "iot_class": "local_polling",
-  "icon": "icons/icon.png"
+  "render_readme": true,
+  "icon": "icon.png",
+  "logo": "logo.png"
 }
