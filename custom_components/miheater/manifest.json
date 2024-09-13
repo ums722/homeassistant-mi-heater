@@ -7,5 +7,6 @@
   "dependencies": [],
   "codeowners": ["@ee02217"],
   "config_flow": true,
-  "iot_class": "local_polling"
+  "iot_class": "local_polling",
+  "icon": "icons/icon.png"
 }
