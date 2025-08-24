@@ -13,7 +13,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "climate")
+        hass.config_entries.async_forward_entry_setups(entry, "climate")
     )
     return True
 
